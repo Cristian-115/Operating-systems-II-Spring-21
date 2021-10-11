@@ -1,0 +1,48 @@
+Questions 1: Assuming that the following JOS kernel code is correct, what type should
+              variable x have, uintptr_t or physaddr_t?
+
+
+             Answer:   Since x is holding a pointer(virtual adress) it should be of type uintptr_t.
+
+
+Questions 2. What entries (rows) in the page directory have been filled in at this point?
+              What addresses do they map and where do they point? In other words, fill out this table
+              as much as possible:
+
+            Answer:   Entry   Base Virtual Address    Points to (logically)
+                      1023    0xFFC00000              Page table for top 4MB of phys memory
+                      1022    0xFF800000              ?
+                      .       ?                       ?
+                      960     0xF0000000              bootstack + KSTKSIZE
+                      .       ?                       ?
+                      957     0xEF400000              kern_pgdir 
+                      956     0xEF000000              pages 
+                      .       ?                       ?
+                      2       0x00800000              UTEXT
+                      1       0x00400000              UTEMP
+                      0       0x00000000             [see next question]
+    
+    
+    
+Questions 3. We have placed the kernel and user environment in the same address space. Why
+              will user programs not be able to read or write the kernel’s memory? What specific
+              mechanisms protect the kernel memory?
+              
+              Answer: The mechinisims that we set to protect the kernal memory are permissions. We set permissions on pages so they cant be written or                    read when they shouldnt be able to.
+              
+
+Questions 4.What is the maximum amount of physical memory that this operating system can support? Why?
+            
+            
+            Answer: since PTSIZE is 4MB and  we can have a max of 524288 pages which are each 4096 bytes.
+            We then multipy  both those numbers 524288 * 4096 to get our max memory of 2gb
+
+Questions 5.
+           How much space overhead is there for managing memory, if we actually had the maximum amount of physical memory? How is this overhead broken down?
+           
+           
+           Answer: the overhead is broken down into  4MB for page info, 2MB for page tables, and 4kb for page directorys. 
+Questions 6.
+          Revisit the page table setup in kern/entry.S and kern/entrypgdir.c. Immediately after we turn on paging, EIP is still a low number (a little over 1MB). At what point do we 12 transition to running at an EIP above KERNBASE? What makes it possible for us to continue executing at a low EIP between when we             enable paging and when we begin running at an EIP above KERNBASE? Why is this transition necessary?
+          
+          Answer: the transistion(eip above KERNBASE) occurs when we jump to entry.2.  We can still run low EIPs because entry_pgdir maps low virual addresses to low physical addresses. This transition is needed because we still have to execute some instructions to jump to a point above KERNBASE after paging is              enabled 
